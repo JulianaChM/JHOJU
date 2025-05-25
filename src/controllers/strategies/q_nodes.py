@@ -107,7 +107,7 @@ class QNodes(SIA):
         self.tiempos: tuple[np.ndarray, np.ndarray]
         self.etiquetas = [tuple(s.lower() for s in ABECEDARY), ABECEDARY]
         self.vertices: set[tuple]
-        # self.memoria_delta = dict()
+        self.memoria_delta = dict()
         self.memoria_omega = dict()
         self.memoria_particiones = dict()
 
