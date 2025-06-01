@@ -7,7 +7,7 @@ from src.controllers.strategies.geometric import Geometric
 def iniciar():
     """Punto de entrada principal"""
                     # ABCD #
-    estado_inicial = "100"
+    estado_inicial = "011"
     condiciones =    "111"
     alcance =        "111"
     mecanismo =      "111"

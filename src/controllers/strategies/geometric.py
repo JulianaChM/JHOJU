@@ -14,8 +14,8 @@ class Geometric(SIA):
     def __init__(self, gestor):
         super().__init__(gestor)
 
-        self.tabla_costos: np.array  # Para guardar costos entre pares de estados
-        self.biparticiones_candidatas = []  # Lista de biparticiones candidatas
+        self.tabla_costos: np.array
+        self.biparticiones_candidatas = []
 
     def aplicar_estrategia(self, condicion, alcance, mecanismo):
         """
@@ -25,31 +25,42 @@ class Geometric(SIA):
         self.sia_preparar_subsistema(condicion, alcance, mecanismo)
 
         # 1. Construir representación n-dimensional
-        futuros = self.sia_subsistema.indices_ncubos
-        presentes = self.sia_subsistema.dims_ncubos
-        cubos = self.sia_subsistema.ncubos
-        print(f"Futuros:   {futuros}")
-        print(f"Presentes: {presentes}")
-        print(f"Inicial:   {self.sia_subsistema.estado_inicial}")
+        subsistema = self.sia_subsistema
+        futuros = subsistema.indices_ncubos
+        presentes = subsistema.dims_ncubos
+        cubos = subsistema.ncubos
 
         # 2. Calcular tabla de costos
-        GAMMA = 1 / 2
-        self.tabla_costos = np.zeros((futuros.size, presentes.size), dtype=np.float32)
-        filas = self.get_filas_tabla_costos(self.sia_subsistema.estado_inicial)
+        self.tabla_costos = np.zeros((presentes.size, futuros.size), dtype=np.float32)
+        GAMMA = 1 / 2  # solo hacemos un saltito
+
+        inicial = np.array(
+            inicial := [
+                bit
+                for i, bit in enumerate(
+                    self.sia_subsistema.estado_inicial,
+                )
+                if i in self.sia_subsistema.dims_ncubos
+            ],
+            dtype=np.int8,
+        )
+        filas = self.get_filas_tabla_costos(inicial)
+
         for cubo in cubos:
             for i, fila in enumerate(filas):
                 prob_estado_inicial = self.get_valor_cubo_estado(
-                    cubo, "".join(np.char.mod("%d", self.sia_subsistema.estado_inicial))
+                    cubo, "".join(np.char.mod("%d", inicial))
                 )
                 prob_estado_siguiente = self.get_valor_cubo_estado(cubo, fila)
                 costo = GAMMA * np.abs(prob_estado_inicial - prob_estado_siguiente)
                 # TODO: evaluar si costo cero para retornar ...
-                self.tabla_costos[cubo.indice, i] = costo
-        # print(self.tabla_costos)
+                self.tabla_costos[i, cubo.indice] = costo
+
         # 3. Identificar biparticiones candidatas
-        # bipartir con nodos presentes 
-        
+        # TODO: bipartir con nodos presentes
+
         # 4. Evaluar y seleccionar la óptima
+
         # 5. Retornar resultado en formato Solution
 
         # Por ahora devolvemos un resultado vacío temporal
