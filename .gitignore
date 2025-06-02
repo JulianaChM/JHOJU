@@ -1,3 +1,12 @@
+# Hidden-Strategies
+**\strategies\geometry.py
+**/strategies/geometry.py
+**\geometry.py
+**/geometry.py
+**/alt.py
+**/basic.py
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -205,10 +214,13 @@ src/testing/
 **\geometry.py
 src/**/geometry.py
 
-# Videos
-./src/video/**
-src/video/**
 
 # Others
 **/qp_nodes.py
 src/controllers/strategies/qp_nodes.py
+
+alt.py
+**/alt.py
+prueba.py
+**/prueba.py
+

@@ -91,14 +91,14 @@ def count_bits(n: int) -> int:
 
 def reindexar(N: int):
     notaciones = {
-        Notation.BIG_ENDIAN.value: range(N),
+        Notation.BIG_ENDIAN.value: big_endian(N),
         Notation.LIL_ENDIAN.value: lil_endian(N),
         # ...otras
     }
     return notaciones[aplicacion.notacion]
 
 
-def seleccionar_subestado(subestado):
+def seleccionar_estado(subestado: np.ndarray) -> np.ndarray:
     # posible in-deducción por acceso inverso
     notaciones = {
         Notation.BIG_ENDIAN.value: subestado,
@@ -106,6 +106,14 @@ def seleccionar_subestado(subestado):
         # ...otras
     }
     return notaciones[aplicacion.notacion]
+
+
+def count_bits(n: int) -> int:
+    return bin(n).count("1")
+
+
+def big_endian(n: int) -> np.ndarray:
+    return np.array(range(n), dtype=np.uint32)
 
 
 def lil_endian(n: int) -> np.ndarray:
