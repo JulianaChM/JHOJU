@@ -22,7 +22,7 @@ class Geometric(SIA):
         self.sia_preparar_subsistema(condicion, alcance, mecanismo)
 
         subsistema = self.sia_subsistema
-        print(f"Subsistema: {subsistema}")
+        # print(f"Subsistema: {subsistema}")
         futuros = subsistema.indices_ncubos
         presentes = subsistema.dims_ncubos
         cubos = subsistema.ncubos
@@ -39,16 +39,16 @@ class Geometric(SIA):
 
         filas_tabla_costos = self.generar_estados_vecinos(estado_inicial)
 
-        for cubo in cubos:
+        for col, cubo in enumerate(cubos):
             estado_inicial_str = self.array_binario_a_str(estado_inicial)
             prob_inicial = self.get_valor_cubo_estado(cubo, estado_inicial_str)
 
             for i, estado_vecino in enumerate(filas_tabla_costos):
                 prob_vecino = self.get_valor_cubo_estado(cubo, estado_vecino)
                 costo = GAMMA * abs(prob_inicial - prob_vecino)
-                self.tabla_costos[i, cubo.indice] = costo
+                self.tabla_costos[i, col] = costo
 
-        self.seleccionar_biparticion_sacando_un_pasado(
+        self.seleccionar_biparticion_sacando_un_presente(
             presentes, futuros, estado_inicial, filas_tabla_costos
         )
         self.seleccionar_biparticion_sacando_un_futuro(presentes, futuros, cubos)
@@ -70,7 +70,7 @@ class Geometric(SIA):
             tiempo_total=time.time() - self.sia_tiempo_inicio,
         )
 
-    def seleccionar_biparticion_sacando_un_pasado(
+    def seleccionar_biparticion_sacando_un_presente(
         self, presentes, futuros, estado_inicial, estados_vecinos
     ):
         """
@@ -92,21 +92,21 @@ class Geometric(SIA):
         """
         Determina la bipartición con menor pérdida sacando un nodo futuro.
         """
-        
         promedios = [x.data.mean() for x in cubos]
         diferencias = [
             np.abs(promedio - self.sia_dists_marginales[i])
             for i, promedio in enumerate(promedios)
         ]
         indice_minimo = np.argmin(diferencias)
-        self.dist_marginal = self.sia_dists_marginales.copy()
-        self.dist_marginal[indice_minimo] = diferencias[indice_minimo]
-        self.perdida = diferencias[indice_minimo]
-        
-        self.biparticion_prim = [
-            presentes.tolist(),
-            [futuros[i] for i in range(len(futuros)) if i != indice_minimo],
-        ]
+        if diferencias[indice_minimo] < self.perdida:
+            self.perdida = diferencias[indice_minimo]
+            self.dist_marginal = self.sia_dists_marginales.copy()
+            self.dist_marginal[indice_minimo] = promedios[indice_minimo]
+
+            self.biparticion_prim = [
+                presentes.tolist(),
+                [futuros[i] for i in range(len(futuros)) if i != indice_minimo],
+            ]
 
     @staticmethod
     def obtener_presentes_no_cambiados(
